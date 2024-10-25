@@ -1,6 +1,6 @@
-import React from "react";
+import { FC } from "react";
 
-export const Banner: React.FC = () => (
+export const Banner: FC = () => (
   <div className="banner">
     <div className="container">
       <h1 className="logo-font">conduit</h1>

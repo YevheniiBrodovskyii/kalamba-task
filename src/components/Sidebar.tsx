@@ -1,6 +1,6 @@
-import React from "react";
+import { FC } from "react";
 
-export const Sidebar: React.FC = () => {
+export const Sidebar: FC = () => {
   const tags = ["programming", "javascript", "emberjs", "angularjs", "react", "mean", "node", "rails"];
 
   return (

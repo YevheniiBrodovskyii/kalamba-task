@@ -1,4 +1,6 @@
-export const Navbar = () => {
+import { FC } from "react";
+
+export const Navbar: FC = (): JSX.Element => {
   return (
     <nav className="navbar navbar-light">
       <div className="container">
