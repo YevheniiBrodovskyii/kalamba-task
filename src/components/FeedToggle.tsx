@@ -1,6 +1,6 @@
-import React from "react";
+import { FC } from "react";
 
-export const FeedToggle: React.FC = () => (
+export const FeedToggle: FC = () => (
   <div className="feed-toggle">
     <ul className="nav nav-pills outline-active">
       <li className="nav-item">

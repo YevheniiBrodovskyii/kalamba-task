@@ -1,13 +1,12 @@
 import React from "react";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 
-import Article from "./components/Article";
 import Editor from "./components/Editor";
 import LoginRegister from "./components/LoginRegister";
 import Logout from "./components/Logout";
 import Profile from "./components/Profile";
 import Settings from "./components/Settings";
-import { Footer, Navbar, ArticleList } from "./components";
+import { Footer, Navbar, ArticleList, Article } from "./components";
 
 function App() {
   return (
@@ -23,11 +22,11 @@ function App() {
           <Route path="/profile/:username/favorites" exact component={Profile} />
           <Route path="/register" exact component={LoginRegister} />
           <Route path="/settings" exact component={Settings} />
-          <Route path="/:slug" exact component={Article} />
+          <Route path="/articles/:slug" exact component={Article} />
           <Route path="/" component={ArticleList} />
         </Switch>
       </Router>
-      <Footer/>
+      <Footer />
     </>
   );
 }
