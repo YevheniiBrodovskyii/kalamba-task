@@ -2,13 +2,12 @@ import React from "react";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 
 import Article from "./components/Article";
-import ArticleList from "./components/ArticleList";
 import Editor from "./components/Editor";
 import LoginRegister from "./components/LoginRegister";
 import Logout from "./components/Logout";
 import Profile from "./components/Profile";
 import Settings from "./components/Settings";
-import { Footer, Navbar } from "./components";
+import { Footer, Navbar, ArticleList } from "./components";
 
 function App() {
   return (
