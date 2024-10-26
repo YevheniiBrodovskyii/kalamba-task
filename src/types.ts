@@ -3,6 +3,7 @@ export interface Author {
   image: string;
   bio: string;
   following: boolean;
+  token: string;
 }
 
 export interface Article {
