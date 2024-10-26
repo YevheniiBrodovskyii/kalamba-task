@@ -1,6 +1,25 @@
-import { FC } from "react";
+import { useAuth } from "contexts/AuthContext";
+import { FC, useState } from "react";
+import { NavLink, useHistory } from "react-router-dom";
 
-export const Navbar: FC = (): JSX.Element => {
+export const Navbar: FC = () => {
+  const { user, logout } = useAuth();
+  const history = useHistory();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  const handleLogout = async () => {
+    setLoading(true);
+    try {
+      logout();
+      history.push("/");
+    } catch (error) {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <nav className="navbar navbar-light">
       <div className="container">
@@ -9,33 +28,48 @@ export const Navbar: FC = (): JSX.Element => {
         </a>
         <ul className="nav navbar-nav pull-xs-right">
           <li className="nav-item">
-            {/* Add "active" class when you're on that page" */}
-            <a className="nav-link active" href="/#">
+            <NavLink className="nav-link" exact to="/" activeClassName="active">
               Home
-            </a>
+            </NavLink>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="/#/editor">
+            <NavLink className="nav-link" to="/editor" activeClassName="active">
               <i className="ion-compose" />
               &nbsp;New Article
-            </a>
+            </NavLink>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="/#/settings">
+            <NavLink className="nav-link" to="/settings" activeClassName="active">
               <i className="ion-gear-a" />
               &nbsp;Settings
-            </a>
+            </NavLink>
           </li>
-          <li className="nav-item">
-            <a className="nav-link" href="/#/login">
-              Sign in
-            </a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="/#/register">
-              Sign up
-            </a>
-          </li>
+          {user ? (
+            <li className="nav-item">
+              <button
+                className="nav-link"
+                onClick={handleLogout}
+                disabled={loading}
+                style={{ cursor: "pointer", background: "none", border: "none", color: "red" }}
+              >
+                {loading ? "Logging out..." : "Logout"}
+              </button>
+              {error ? <li className="error-messages">Try again</li> : null}
+            </li>
+          ) : (
+            <>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/login" activeClassName="active">
+                  Sign in
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/register" activeClassName="active">
+                  Sign up
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </nav>
