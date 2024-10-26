@@ -8,7 +8,8 @@ import { Article as ArticleType } from "../../types";
 export const Article: FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { article, loading, error } = useArticle(slug);
-  console.log(article);
+
+  //TODO: Make beautiful loader/ displaying error
   if (error) {
     return <div>Error: {error}</div>;
   }

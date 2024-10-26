@@ -6,6 +6,7 @@ import { Banner, FeedToggle, Sidebar } from "components";
 export const ArticleList: FC = () => {
   const { articles, loading, error } = useArticles();
 
+  //TODO: Make beautiful loader/ displaying error
   if (loading) {
     return <div>Loading articles...</div>;
   }

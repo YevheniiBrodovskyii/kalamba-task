@@ -4,9 +4,8 @@ import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import Editor from "./components/Editor";
 import LoginRegister from "./components/LoginRegister";
 import Logout from "./components/Logout";
-import Profile from "./components/Profile";
 import Settings from "./components/Settings";
-import { Footer, Navbar, ArticleList, Article } from "./components";
+import { Footer, Navbar, ArticleList, Article, Profile } from "./components";
 
 function App() {
   return (
