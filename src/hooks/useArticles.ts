@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Article } from "types";
 
 interface UseArticlesOptions {
   author?: string;
+  feed?: boolean;
 }
 
 interface UseArticlesResult {
@@ -16,29 +17,36 @@ export const useArticles = (options?: UseArticlesOptions): UseArticlesResult => 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchArticles = async () => {
-      setLoading(true);
-      try {
-        const url = options?.author
-          ? `http://localhost:3000/api/articles?author=${options.author}`
-          : `http://localhost:3000/api/articles`;
+  const fetchArticles = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setArticles(data.articles);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error");
-      } finally {
-        setLoading(false);
+    try {
+      let url = `http://localhost:3000/api/articles`;
+      if (options?.feed) {
+        url = `http://localhost:3000/api/articles/feed`;
+      } else if (options?.author) {
+        url += `?author=${options.author}`;
       }
-    };
 
+      const response = await fetch(url, {
+        headers: options?.feed ? { Authorization: `Token ${localStorage.getItem("jwtToken")}` } : undefined,
+      });
+
+      if (!response.ok) throw new Error("Network response was not ok");
+
+      const data = await response.json();
+      setArticles(data.articles);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  }, [options?.author, options?.feed]);
+
+  useEffect(() => {
     fetchArticles();
-  }, [options?.author]);
+  }, [fetchArticles]);
 
   return { articles, loading, error };
 };
