@@ -1,13 +1,9 @@
-export { Navbar } from "./Navbar";
-export { Footer } from "./ui/Footer";
+export { Footer, Banner, Button, Loading, ErrorMessage, NoDataFoundMessage } from "./ui";
 export { ArticleList } from "./ArticleList";
 export { Sidebar } from "./Sidebar";
-export { Banner } from "./ui/Banner";
-export { FeedToggle } from "./FeedToggle";
+export { FeedToggle, FavouriteToggle, Navbar } from "./Navigation";
 export { Article } from "./Article";
 export { CommentsSection } from "./CommentsSection";
 export { Profile } from "./Profile";
 export { LoginPage } from "./Authentication";
 export { RegisterPage } from "./Authentication";
-export {Button} from './ui/Button';
-export { Loading, ErrorMessage, NoArticles } from "./ui";

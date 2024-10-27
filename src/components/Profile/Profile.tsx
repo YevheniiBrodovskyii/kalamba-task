@@ -4,29 +4,34 @@ import { useParams } from "react-router-dom";
 import { useArticles } from "hooks/useArticles";
 import { ProfileHeader } from "./ProfileHeader";
 import { ProfileArticlesList } from "./ProfileArticlesList";
+import { ErrorMessage, Loading, NoDataFoundMessage } from "components/ui";
 
 export const Profile: FC = () => {
   const { username } = useParams<{ username: string }>();
   const { profile, loading: profileLoading, error: profileError } = useProfile(username);
   const { articles, loading: articlesLoading, error: articlesError } = useArticles({ author: username });
 
-  //TODO: Make beautiful loader/ displaying error
-  if (profileError) return <div>Error: {profileError}</div>;
-  if (profileLoading) return <div>Loading profile...</div>;
-  if (!profile) return <div>No profile found.</div>;
+  const renderProfileContent = () => {
+    //TODO: Make beautiful loader/ displaying error
+    if (profileError) return <ErrorMessage error={profileError} />;
+    if (profileLoading) return <Loading />;
+    if (!profile) return <NoDataFoundMessage />;
 
-  return (
-    <div className="profile-page">
-      <ProfileHeader profile={profile} />
-      <div className="container">
-        {articlesError ? (
-          <div>Error loading articles: {articlesError}</div>
-        ) : articlesLoading ? (
-          <div>Loading articles...</div>
-        ) : (
-          <ProfileArticlesList articles={articles} />
-        )}
-      </div>
-    </div>
-  );
+    return (
+      <>
+        <ProfileHeader profile={profile} />
+        <div className="container">{renderArticlesContent()}</div>
+      </>
+    );
+  };
+
+  const renderArticlesContent = () => {
+    if (articlesError) return <ErrorMessage error={articlesError} />;
+    if (articlesLoading) return <Loading />;
+    if (articles.length === 0) return <NoDataFoundMessage />;
+
+    return <ProfileArticlesList username={username} />;
+  };
+
+  return <div className="profile-page">{renderProfileContent()}</div>;
 };

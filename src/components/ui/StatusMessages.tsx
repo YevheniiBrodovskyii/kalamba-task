@@ -17,7 +17,7 @@ export const ErrorMessage: FC<ErrorMessageProps> = ({ error }) => {
   return <div className="error-messages">{error}</div>;
 };
 
-export const NoArticles: FC = () => <div>No article found.</div>;
+export const NoDataFoundMessage: FC = () => <div>No data found.</div>;
 
 export const SuccessMessage: FC<SuccessMessageProps> = ({ username, show }) => {
   if (!show) return null;

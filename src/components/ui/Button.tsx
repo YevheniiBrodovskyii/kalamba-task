@@ -3,7 +3,7 @@ import React, { FC } from "react";
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "outline-primary" | "outline-secondary" | "outline";
   size?: "sm" | "lg";
-  position?: "pull-xs-right";
+  position?: "pull-xs-right" | "action-btn";
   icon?: React.ReactNode;
   children: React.ReactNode;
 }
@@ -12,7 +12,7 @@ export const Button: FC<ButtonProps> = ({
   onClick,
   disabled = false,
   variant = "outline-primary",
-  position = "pull-xs-right",
+  position = '',
   size = "sm",
   icon,
   children,
