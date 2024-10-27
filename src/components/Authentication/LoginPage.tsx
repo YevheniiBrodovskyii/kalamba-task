@@ -2,13 +2,13 @@ import { ErrorMessage } from "components/ui";
 import { SuccessMessage } from "components/ui/StatusMessages";
 import { useAuth } from "contexts/AuthContext";
 import { FC, useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const LoginPage: FC = () => {
   const { user, login, loading, error } = useAuth();
   const [formData, setFormData] = useState<{ email: string; password: string }>({ email: "", password: "" });
   const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,11 +25,11 @@ export const LoginPage: FC = () => {
       setShowSuccessMessage(true);
       const timer = setTimeout(() => {
         setShowSuccessMessage(false);
-        history.push("/");
+        navigate("/");
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [user, history]);
+  }, [user, navigate]);
 
   return (
     <div className="auth-page">
@@ -56,6 +56,7 @@ export const LoginPage: FC = () => {
                     required
                     onChange={handleChange}
                     aria-label="Email"
+                    autoComplete="email"
                   />
                 </fieldset>
                 <fieldset className="form-group">
@@ -68,6 +69,7 @@ export const LoginPage: FC = () => {
                     required
                     onChange={handleChange}
                     aria-label="Password"
+                    autoComplete="current-password"
                   />
                 </fieldset>
                 <button className="btn btn-lg btn-primary pull-xs-right" type="submit" disabled={loading}>

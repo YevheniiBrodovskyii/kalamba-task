@@ -1,4 +1,4 @@
-export { Footer, Banner, Button, Loading, ErrorMessage, NoDataFoundMessage } from "./ui";
+export { Footer, Banner, Button, DisabledButton, Loading, ErrorMessage, NoDataFoundMessage } from "./ui";
 export { ArticleList } from "./ArticleList";
 export { Sidebar } from "./Sidebar";
 export { FeedToggle, FavouriteToggle, Navbar } from "./Navigation";

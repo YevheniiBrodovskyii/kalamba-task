@@ -1,16 +1,14 @@
 import { useAuth } from "contexts/AuthContext";
+import { useRedirectToLogin } from "hooks/useRedirectToLogin";
 import { useEffect } from "react";
-import { useHistory } from "react-router-dom";
 
 export default function Settings() {
-  const { user, logout } = useAuth();
-  const history = useHistory();
+  const { logout } = useAuth();
+  const redirectToLogin = useRedirectToLogin();
 
   useEffect(() => {
-    if (!user) {
-      history.push("/");
-    }
-  }, [user, history]);
+    if (redirectToLogin()) return;
+  }, [redirectToLogin]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

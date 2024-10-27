@@ -17,6 +17,25 @@ export const useArticles = (options?: UseArticlesOptions): UseArticlesResult => 
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  // const token = localStorage.getItem("jwtToken");
+
+  // useEffect(() => {
+  //   const fetchArticlesStatus = async () => {
+  //     if (!token) return;
+
+  //     try {
+  //       const response = await fetch(`http://localhost:3000/api/articles/`);
+
+  //       if (!response.ok) throw new Error("Failed to fetch article status");
+  //       const data = await response.json();
+  //       setArticles(data.articles);
+  //     } catch (err) {
+  //       setError(err instanceof Error ? err.message : "Unknown error");
+  //     }
+  //   };
+
+  //   fetchArticlesStatus();
+  // }, [token]);
 
   const fetchArticles = useCallback(async () => {
     setLoading(true);
@@ -28,15 +47,11 @@ export const useArticles = (options?: UseArticlesOptions): UseArticlesResult => 
       if (options?.feed) {
         url = `http://localhost:3000/api/articles/feed`;
       } else {
-        const params: URLSearchParams = new URLSearchParams();
         if (options?.author) {
-          params.append("author", options.author);
+          url += `?author=${options.author}`;
         }
         if (options?.favorited) {
-          params.append("favorited", options.favorited);
-        }
-        if (params.toString()) {
-          url += `?${params.toString()}`;
+          url += `?favorited=${options.favorited}`;
         }
       }
 
