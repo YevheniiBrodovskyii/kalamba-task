@@ -1,19 +1,15 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useArticles } from "../../hooks/useArticles";
 import { ArticlePreview } from "./ArticlePreview";
-import { Banner, FeedToggle, Sidebar } from "components";
+import { Banner, ErrorMessage, FeedToggle, Loading, Sidebar } from "components";
 
 export const ArticleList: FC = () => {
-  const { articles, loading, error } = useArticles();
+  const [isGlobalFeed, setIsGlobalFeed] = useState(true);
+  const { articles, loading, error } = useArticles({ feed: !isGlobalFeed });
 
   //TODO: Make beautiful loader/ displaying error
-  if (loading) {
-    return <div>Loading articles...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  if (loading) return <Loading />;
+  if (error) return <ErrorMessage error={error} />;
 
   return (
     <div className="home-page">
@@ -21,7 +17,7 @@ export const ArticleList: FC = () => {
       <div className="container page">
         <div className="row">
           <div className="col-md-9">
-            <FeedToggle />
+            <FeedToggle isGlobal={isGlobalFeed} onToggle={setIsGlobalFeed} />
 
             {articles.map(article => (
               <ArticlePreview key={article.slug} article={article} />

@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useArticle } from "../../hooks/useArticle";
 import { FC } from "react";
-import { CommentsSection } from "components/CommentsSection";
+import { CommentsSection, ErrorMessage, Loading, NoArticles } from "components";
 import { ArticleActions } from "./ArticleActions";
 import { Article as ArticleType } from "../../types";
 
@@ -10,42 +10,33 @@ export const Article: FC = () => {
   const { article, loading, error } = useArticle(slug);
 
   //TODO: Make beautiful loader/ displaying error
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  if (loading) return <Loading />;
+  if (error) return <ErrorMessage error={error} />;
+  if (!article) return <NoArticles />;
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const { title, body, createdAt, author, favoritesCount } = article as ArticleType;
 
-  if (!article) {
-    return <div>No article found.</div>;
-  }
-
-  const { title, body, createdAt, author, favoritesCount, following } = article as ArticleType;
+  const articleActions = (
+    <ArticleActions createdAt={createdAt} author={author} favoritesCount={favoritesCount} slug={slug} />
+  );
 
   return (
     <div className="article-page">
       <div className="banner">
         <div className="container">
           <h1>{title}</h1>
-          <ArticleActions createdAt={createdAt} author={author} favoritesCount={favoritesCount} following={following} />
+          {articleActions}
         </div>
       </div>
 
       <div className="container page">
         <div className="row article-content">
-          <div className="col-md-12">
-            {/* Convert Markdown to HTML */}
-            {body}
-          </div>
+          <div className="col-md-12">{body}</div>
         </div>
 
         <hr />
 
-        <div className="article-actions">
-          <ArticleActions createdAt={createdAt} author={author} favoritesCount={favoritesCount} following={following} />
-        </div>
+        <div className="article-actions">{articleActions}</div>
 
         <CommentsSection />
       </div>

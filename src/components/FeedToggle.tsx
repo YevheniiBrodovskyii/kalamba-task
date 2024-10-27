@@ -1,17 +1,23 @@
 import { FC } from "react";
+import { Link } from "react-router-dom";
 
-export const FeedToggle: FC = () => (
+interface FeedToggleProps {
+  isGlobal: boolean;
+  onToggle: (isGlobal: boolean) => void;
+}
+
+export const FeedToggle: FC<FeedToggleProps> = ({ isGlobal, onToggle }) => (
   <div className="feed-toggle">
     <ul className="nav nav-pills outline-active">
       <li className="nav-item">
-        <a className="nav-link disabled" href="">
+        <Link className={`nav-link ${!isGlobal ? "active" : ""}`} to="/your-feed" onClick={() => onToggle(false)}>
           Your Feed
-        </a>
+        </Link>
       </li>
       <li className="nav-item">
-        <a className="nav-link active" href="">
+        <Link className={`nav-link ${isGlobal ? "active" : ""}`} to="/global-feed" onClick={() => onToggle(true)}>
           Global Feed
-        </a>
+        </Link>
       </li>
     </ul>
   </div>

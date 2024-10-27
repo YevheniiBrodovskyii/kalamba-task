@@ -1,6 +1,7 @@
+import { ErrorMessage } from "components/ui";
+import { SuccessMessage } from "components/ui/StatusMessages";
 import { useAuth } from "contexts/AuthContext";
-import { FC, useEffect, useState, useCallback } from "react";
-import { FaCheckCircle } from "react-icons/fa";
+import { FC, useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 
 export const LoginPage: FC = () => {
@@ -30,29 +31,6 @@ export const LoginPage: FC = () => {
     }
   }, [user, history]);
 
-  const renderErrorMessage = useCallback(() => {
-    if (error) {
-      return (
-        <ul className="error-messages">
-          <li>{error}</li>
-        </ul>
-      );
-    }
-    return null;
-  }, [error]);
-
-  const renderSuccessMessage = useCallback(() => {
-    if (showSuccessMessage && user) {
-      return (
-        <div className="success-message" style={{ color: "green", textAlign: "center", marginBottom: "20px" }}>
-          <FaCheckCircle style={{ marginRight: "5px" }} />
-          {`Login successful! Welcome, ${user.username}!`}
-        </div>
-      );
-    }
-    return null;
-  }, [showSuccessMessage, user]);
-
   return (
     <div className="auth-page">
       <div className="container page">
@@ -63,8 +41,8 @@ export const LoginPage: FC = () => {
               <Link to="/register">Do not have an account? Sign up</Link>
             </p>
 
-            {renderErrorMessage()}
-            {renderSuccessMessage()}
+            <ErrorMessage error={error} />
+            <SuccessMessage username={user?.username || ""} show={showSuccessMessage} />
 
             {!user && (
               <form onSubmit={handleLogin}>

@@ -1,34 +1,76 @@
 import { FC } from "react";
 import { Author } from "types";
+import { Link } from "react-router-dom";
+import { useFavoritePost } from "hooks/useFavoritePost";
+import { useFollowUser } from "hooks/useFollowUser";
+import { Button } from "components";
+import { useRedirectToLogin } from "hooks/useRedirectToLogin";
 
 interface ArticleActionsProps {
   author: Author;
   createdAt: string;
-  following: boolean;
   favoritesCount: number;
+  slug: string;
 }
 
-export const ArticleActions: FC<ArticleActionsProps> = ({ author, createdAt, following, favoritesCount }) => {
+export const ArticleActions: FC<ArticleActionsProps> = ({ author, createdAt, slug }) => {
+  const {
+    favoritePost,
+    unfavoritePost,
+    isFavorited,
+    favoritesCount,
+    isLoading: isFavoriting,
+    error: favoriteError,
+  } = useFavoritePost(slug);
+  const {
+    followUser,
+    unfollowUser,
+    isFollowing,
+    isLoading: isFollowingUser,
+    error: followError,
+  } = useFollowUser(author.username);
+  const redirectToLogin = useRedirectToLogin();
+
+  const handleFavoriteClick = () => {
+    if (redirectToLogin()) return;
+    isFavorited ? unfavoritePost(slug) : favoritePost(slug);
+  };
+
+  const handleFollowClick = () => {
+    if (redirectToLogin()) return;
+    isFollowing ? unfollowUser(author.username) : followUser(author.username);
+  };
+
   return (
     <div className="article-meta">
-      <a href={`/profile/${author.username}`}>
+      <Link to={`/profile/${author.username}`}>
         <img src={author.image} alt={`${author.username}'s avatar`} />
-      </a>
+      </Link>
       <div className="info">
-        <a href={`/profile/${author.username}`} className="author">
+        <Link to={`/profile/${author.username}`} className="author">
           {author.username}
-        </a>
+        </Link>
         <span className="date">{new Date(createdAt).toLocaleDateString()}</span>
       </div>
-      <button className="btn btn-sm btn-outline-secondary">
-        <i className="ion-plus-round" />
-        &nbsp; {following ? "Unfollow" : "Follow"} {author.username}
-      </button>
+      <Button
+        variant="outline-secondary"
+        onClick={handleFollowClick}
+        disabled={isFollowingUser}
+        icon={<i className="ion-plus-round" />}
+      >
+        &nbsp; {isFollowing ? "Unfollow" : "Follow"} {author.username}
+      </Button>
       &nbsp;
-      <button className="btn btn-sm btn-outline-primary">
-        <i className="ion-heart" />
-        &nbsp; Favorite Post <span className="counter">({favoritesCount})</span>
-      </button>
+      <Button
+        variant="outline-primary"
+        onClick={handleFavoriteClick}
+        disabled={isFavoriting}
+        icon={<i className="ion-heart" />}
+      >
+        &nbsp; {isFavorited ? "Unfavorite" : "Favorite"} Post <span className="counter">({favoritesCount})</span>
+      </Button>
+      {favoriteError && <p className="error">{favoriteError}</p>}
+      {followError && <p className="error">{followError}</p>}
     </div>
   );
 };

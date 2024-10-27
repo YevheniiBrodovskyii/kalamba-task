@@ -100,6 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (response.ok) {
         const data = await response.json();
         dispatch({ type: "LOGIN_SUCCESS", user: data.user });
+        console.log(data.user)
       } else {
         setError("Failed to get user information");
       }
