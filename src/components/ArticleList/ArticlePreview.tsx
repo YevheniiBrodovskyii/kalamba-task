@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useFavoritePost } from "hooks/useFavoritePost";
 import { Button } from "components/ui";
 import { useRedirectToLogin } from "hooks/useRedirectToLogin";
+import { DEFAULT_AVATAR_URL } from "constants";
 
 export const ArticlePreview: FC<{ article: Article }> = ({ article }) => {
   const { slug, title, description, createdAt, author } = article;
@@ -19,8 +20,8 @@ export const ArticlePreview: FC<{ article: Article }> = ({ article }) => {
   const redirectToLogin = useRedirectToLogin();
 
   const handleFavoriteClick = () => {
-    if (redirectToLogin()) return;
-    isFavorited ? unfavoritePost(slug) : favoritePost(slug);
+    redirectToLogin();
+    return isFavorited ? unfavoritePost(slug) : favoritePost(slug);
   };
 
   return (
@@ -28,7 +29,7 @@ export const ArticlePreview: FC<{ article: Article }> = ({ article }) => {
       <div className="article-meta">
         {authorUsername && (
           <Link to={`/profile/${authorUsername}`}>
-            <img src={authorImage || "/default-avatar.png"} alt={`${authorUsername}'s avatar`} />
+            <img src={authorImage || DEFAULT_AVATAR_URL} alt={`${authorUsername}'s avatar`} />
           </Link>
         )}
         <div className="info">

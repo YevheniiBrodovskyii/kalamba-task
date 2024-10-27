@@ -1,24 +1,35 @@
 import { FC } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 interface ArticleToggleProps {
   showFavorited: boolean;
+  username: string;
   onToggle: (showFavorited: boolean) => void;
 }
 
-export const FavouriteToggle: FC<ArticleToggleProps> = ({ showFavorited, onToggle }) => (
-  <div className="articles-toggle">
-    <ul className="nav nav-pills outline-active">
-      <li className="nav-item">
-        <Link className={`nav-link ${!showFavorited ? "active" : ""}`} to="#" onClick={() => onToggle(false)}>
-          My Articles
-        </Link>
-      </li>
-      <li className="nav-item">
-        <Link className={`nav-link ${showFavorited ? "active" : ""}`} to="#" onClick={() => onToggle(true)}>
-          Favorited Articles
-        </Link>
-      </li>
-    </ul>
-  </div>
-);
+export const FavouriteToggle: FC<ArticleToggleProps> = ({ showFavorited, onToggle, username }) => {
+  return (
+    <div className="articles-toggle">
+      <ul className="nav nav-pills outline-active">
+        <li className="nav-item">
+          <NavLink
+            className={`nav-link ${!showFavorited ? "active" : ""}`}
+            to={`/profile/${username}/my`}
+            onClick={() => onToggle(false)}
+          >
+            My Articles
+          </NavLink>
+        </li>
+        <li className="nav-item">
+          <NavLink
+            className={`nav-link ${showFavorited ? "active" : ""}`}
+            to={`/profile/${username}/favorites`}
+            onClick={() => onToggle(true)}
+          >
+            Favorited Articles
+          </NavLink>
+        </li>
+      </ul>
+    </div>
+  );
+};

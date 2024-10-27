@@ -32,13 +32,13 @@ export const ArticleActions: FC<ArticleActionsProps> = ({ author, createdAt, slu
   const redirectToLogin = useRedirectToLogin();
 
   const handleFavoriteClick = () => {
-    if (redirectToLogin()) return;
-    isFavorited ? unfavoritePost(slug) : favoritePost(slug);
+    redirectToLogin()
+    return isFavorited ? unfavoritePost(slug) : favoritePost(slug);
   };
 
   const handleFollowClick = () => {
-    if (redirectToLogin()) return;
-    isFollowing ? unfollowUser(author.username) : followUser(author.username);
+    redirectToLogin()
+    return isFollowing ? unfollowUser(author.username) : followUser(author.username);
   };
 
   return (

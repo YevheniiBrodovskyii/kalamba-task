@@ -1,15 +1,13 @@
 import { ArticlePreview } from "components/ArticleList/ArticlePreview";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { useArticles } from "hooks/useArticles";
-import { FavouriteToggle } from "components";
 
 interface ArticleListProps {
   username: string;
+  showFavorited: boolean;
 }
 
-export const ProfileArticlesList: FC<ArticleListProps> = ({ username }) => {
-  const [showFavorited, setShowFavorited] = useState<boolean>(false);
-
+export const ProfileArticlesList: FC<ArticleListProps> = ({ username, showFavorited }) => {
   const {
     articles: myArticles,
     loading: loadingMyArticles,
@@ -28,8 +26,6 @@ export const ProfileArticlesList: FC<ArticleListProps> = ({ username }) => {
 
   return (
     <>
-      <FavouriteToggle showFavorited={showFavorited} onToggle={setShowFavorited} />
-
       {loading ? (
         <p>Loading articles...</p>
       ) : error ? (

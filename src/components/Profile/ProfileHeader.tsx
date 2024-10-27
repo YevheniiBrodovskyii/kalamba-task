@@ -1,5 +1,7 @@
 import { Button } from "components/ui";
+import { DEFAULT_AVATAR_URL } from "constants";
 import { useFollowUser } from "hooks/useFollowUser";
+import { useRedirectToLogin } from "hooks/useRedirectToLogin";
 import { FC } from "react";
 import { Author } from "types";
 
@@ -16,8 +18,11 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({ profile }) => {
     isLoading: isFollowingUser,
     error: followError,
   } = useFollowUser(username);
+  const redirectToLogin = useRedirectToLogin();
+
   const handleFollowClick = () => {
-    isFollowing ? unfollowUser(username) : followUser(username);
+    redirectToLogin()
+    return isFollowing ? unfollowUser(username) : followUser(username);
   };
 
   return (
@@ -25,7 +30,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({ profile }) => {
       <div className="container">
         <div className="row">
           <div className="col-xs-12 col-md-10 offset-md-1">
-            <img src={image} alt={`${username}'s avatar`} className="user-img" />
+            <img src={image || DEFAULT_AVATAR_URL} alt={`${username}'s avatar`} className="user-img" />
             <h4>{username}</h4>
             <p>{bio}</p>
             <Button
