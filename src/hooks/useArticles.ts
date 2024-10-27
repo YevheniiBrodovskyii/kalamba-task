@@ -4,6 +4,7 @@ import { Article } from "types";
 interface UseArticlesOptions {
   author?: string;
   feed?: boolean;
+  favorited?: string;
 }
 
 interface UseArticlesResult {
@@ -23,10 +24,20 @@ export const useArticles = (options?: UseArticlesOptions): UseArticlesResult => 
 
     try {
       let url = `http://localhost:3000/api/articles`;
+
       if (options?.feed) {
         url = `http://localhost:3000/api/articles/feed`;
-      } else if (options?.author) {
-        url += `?author=${options.author}`;
+      } else {
+        const params: URLSearchParams = new URLSearchParams();
+        if (options?.author) {
+          params.append("author", options.author);
+        }
+        if (options?.favorited) {
+          params.append("favorited", options.favorited);
+        }
+        if (params.toString()) {
+          url += `?${params.toString()}`;
+        }
       }
 
       const response = await fetch(url, {
@@ -42,7 +53,7 @@ export const useArticles = (options?: UseArticlesOptions): UseArticlesResult => 
     } finally {
       setLoading(false);
     }
-  }, [options?.author, options?.feed]);
+  }, [options?.author, options?.feed, options?.favorited]);
 
   useEffect(() => {
     fetchArticles();

@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useArticle } from "../../hooks/useArticle";
 import { FC } from "react";
-import { CommentsSection, ErrorMessage, Loading, NoArticles } from "components";
+import { CommentsSection, ErrorMessage, Loading, NoDataFoundMessage } from "components";
 import { ArticleActions } from "./ArticleActions";
 import { Article as ArticleType } from "../../types";
 
@@ -12,7 +12,7 @@ export const Article: FC = () => {
   //TODO: Make beautiful loader/ displaying error
   if (loading) return <Loading />;
   if (error) return <ErrorMessage error={error} />;
-  if (!article) return <NoArticles />;
+  if (!article) return <NoDataFoundMessage />;
 
   const { title, body, createdAt, author, favoritesCount } = article as ArticleType;
 

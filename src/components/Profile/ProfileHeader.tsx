@@ -1,3 +1,4 @@
+import { Button } from "components/ui";
 import { useFollowUser } from "hooks/useFollowUser";
 import { FC } from "react";
 import { Author } from "types";
@@ -8,7 +9,13 @@ interface ProfileHeaderProps {
 
 export const ProfileHeader: FC<ProfileHeaderProps> = ({ profile }) => {
   const { username, image, bio } = profile;
-  const { followUser, unfollowUser, isFollowing, isLoading: isFollowingUser, error: followError } = useFollowUser(username);
+  const {
+    followUser,
+    unfollowUser,
+    isFollowing,
+    isLoading: isFollowingUser,
+    error: followError,
+  } = useFollowUser(username);
   const handleFollowClick = () => {
     isFollowing ? unfollowUser(username) : followUser(username);
   };
@@ -21,14 +28,15 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({ profile }) => {
             <img src={image} alt={`${username}'s avatar`} className="user-img" />
             <h4>{username}</h4>
             <p>{bio}</p>
-            <button
-              className="btn btn-sm btn-outline-secondary action-btn"
+            <Button
               onClick={handleFollowClick}
               disabled={isFollowingUser}
+              variant="outline-secondary"
+              position="action-btn"
+              icon={<i className="ion-plus-round" />}
             >
-              <i className="ion-plus-round" />
               &nbsp; {isFollowing ? `Unfollow ${username}` : `Follow ${username}`}
-            </button>
+            </Button>
           </div>
         </div>
         {followError && <p className="error">{followError}</p>}
