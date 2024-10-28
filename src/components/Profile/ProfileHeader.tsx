@@ -1,8 +1,7 @@
-import { Button, showErrorNotification } from "components/ui";
+import { Button } from "components/ui";
 import { DEFAULT_AVATAR_URL } from "constants";
-import { useFollowUser } from "hooks/useFollowUser";
-import { useRedirectToLogin } from "hooks/useRedirectToLogin";
-import { FC, useEffect } from "react";
+import { useActionHandler, useFollowUser } from "hooks";
+import { FC } from "react";
 import { Author } from "types";
 
 interface ProfileHeaderProps {
@@ -12,25 +11,17 @@ interface ProfileHeaderProps {
 export const ProfileHeader: FC<ProfileHeaderProps> = ({ profile }) => {
   const { username, image, bio } = profile;
   const {
-    followUser,
-    unfollowUser,
+    toggleFollow,
     isFollowing,
     isLoading: isFollowingUser,
-    error: followError,
   } = useFollowUser(username);
-  const redirectToLogin = useRedirectToLogin();
-
-  useEffect(() => {
-    if (followError) {
-      showErrorNotification(followError);
-    }
-  }, [followError]);
+  const { handleActionClick } = useActionHandler();
 
   const handleFollowClick = () => {
-    if (!isFollowingUser) {
-      redirectToLogin();
-      return isFollowing ? unfollowUser(username) : followUser(username);
-    }
+    handleActionClick(
+      () => toggleFollow(!isFollowing),
+      username,
+    );
   };
 
   const renderFollowButton = () => (

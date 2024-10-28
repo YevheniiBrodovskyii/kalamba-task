@@ -1,23 +1,17 @@
-import { useParams } from "react-router-dom";
-import { useArticle } from "../../hooks/useArticle";
-import { FC, useEffect } from "react";
-import { CommentsSection, showErrorNotification, Loading, NoDataFoundMessage } from "components";
+import { Navigate, useParams } from "react-router-dom";
+import { useArticle } from "hooks";
+import { FC } from "react";
+import { CommentsSection, Loading } from "components";
 import { ArticleActions } from "./ArticleActions";
 import { Article as ArticleType } from "../../types";
 import ReactMarkdown from "react-markdown";
 
 export const Article: FC = () => {
   const { slug = '' } = useParams<{ slug: string }>();
-  const { article, loading, error } = useArticle(slug);
-
-  useEffect(() => {
-    if (error) {
-      showErrorNotification(error);
-    }
-  }, [error]);
+  const { article, loading } = useArticle(slug);
 
   if (loading) return <Loading />;
-  if (!article) return <NoDataFoundMessage />;
+  if (!article) return <Navigate to="/not-found" />;
 
   const { title, body, createdAt, author, favoritesCount } = article as ArticleType || {};
 

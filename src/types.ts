@@ -13,4 +13,5 @@ export interface Article {
   author: Author;
   favoritesCount: number;
   slug: string;
+  following?: boolean;
 }

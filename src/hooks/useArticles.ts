@@ -1,3 +1,4 @@
+import { apiFetch } from "helpers/api";
 import { useEffect, useState, useCallback } from "react";
 import { Article } from "types";
 
@@ -10,69 +11,36 @@ interface UseArticlesOptions {
 interface UseArticlesResult {
   articles: Article[];
   loading: boolean;
-  error: string | null;
 }
 
 export const useArticles = (options?: UseArticlesOptions): UseArticlesResult => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  // const token = localStorage.getItem("jwtToken");
-
-  // useEffect(() => {
-  //   const fetchArticlesStatus = async () => {
-  //     if (!token) return;
-
-  //     try {
-  //       const response = await fetch(`http://localhost:3000/api/articles/`);
-
-  //       if (!response.ok) throw new Error("Failed to fetch article status");
-  //       const data = await response.json();
-  //       setArticles(data.articles);
-  //     } catch (err) {
-  //       setError(err instanceof Error ? err.message : "Unknown error");
-  //     }
-  //   };
-
-  //   fetchArticlesStatus();
-  // }, [token]);
+  const token = localStorage.getItem("jwtToken");
 
   const fetchArticles = useCallback(async () => {
     setLoading(true);
-    setError(null);
+    let url = `${process.env.REACT_APP_API_URL}/api/articles${options?.feed ? "/feed" : ""}`;
+    const params = new URLSearchParams({
+      ...(options?.author && { author: options.author }),
+      ...(options?.favorited && { favorited: options.favorited }),
+    });
 
-    try {
-      let url = `http://localhost:3000/api/articles`;
+    if (options?.author) params.append("author", options.author);
+    if (options?.favorited) params.append("favorited", options.favorited);
+    const queryString = params.toString();
+    if (queryString) url += `?${queryString}`;
 
-      if (options?.feed) {
-        url = `http://localhost:3000/api/articles/feed`;
-      } else {
-        if (options?.author) {
-          url += `?author=${options.author}`;
-        }
-        if (options?.favorited) {
-          url += `?favorited=${options.favorited}`;
-        }
-      }
+    const headers = options?.feed && token ? { Authorization: `Token ${token}` } : undefined;
 
-      const response = await fetch(url, {
-        headers: options?.feed ? { Authorization: `Token ${localStorage.getItem("jwtToken")}` } : undefined,
-      });
-
-      if (!response.ok) throw new Error("Network response was not ok");
-
-      const data = await response.json();
-      setArticles(data.articles);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
-    } finally {
-      setLoading(false);
-    }
-  }, [options?.author, options?.feed, options?.favorited]);
+    apiFetch<{ articles: Article[] }>(`${url}?${params}`, { headers })
+      .then(data => setArticles(data?.articles || []))
+      .finally(() => setLoading(false));
+  }, [options?.author, options?.feed, options?.favorited, token]);
 
   useEffect(() => {
     fetchArticles();
   }, [fetchArticles]);
 
-  return { articles, loading, error };
+  return { articles, loading };
 };

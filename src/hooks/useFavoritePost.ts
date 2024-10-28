@@ -1,122 +1,50 @@
-import { useState, useCallback, useEffect } from "react";
-
-interface ArticleResponse {
-  article: {
-    favorited: boolean;
-    favoritesCount: number;
-  };
-}
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { apiFetch } from "helpers/api";
+import { showSuccessNotification } from "components";
 
 interface UseFavoritePost {
-  favoritePost: (slug: string) => Promise<void>;
-  unfavoritePost: (slug: string) => Promise<void>;
+  toggleFavorite: (favorite: boolean) => Promise<void>;
   isFavorited: boolean;
   favoritesCount: number;
   isLoading: boolean;
-  error: string | null;
 }
 
 export const useFavoritePost = (slug: string): UseFavoritePost => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
   const [favoritesCount, setFavoritesCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const token = localStorage.getItem("jwtToken");
+  const token = useMemo(() => localStorage.getItem("jwtToken"), []);
+  const headers = useMemo(() => (token ? { Authorization: `Token ${token}` } : undefined), [token]);
 
   useEffect(() => {
-    const fetchFavoriteStatus = async () => {
-      if (!token) return;
-
-      try {
-        const response = await fetch(`http://localhost:3000/api/articles/${slug}`, {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch article status");
-        const data: ArticleResponse = await response.json();
+    apiFetch<{ article: { favorited: boolean; favoritesCount: number } }>(
+      `${process.env.REACT_APP_API_URL}/api/articles/${slug}`,
+      { headers }
+    ).then(data => {
+      if (data) {
         setIsFavorited(data.article.favorited);
         setFavoritesCount(data.article.favoritesCount);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error");
       }
-    };
+    });
+  }, [slug, headers]);
 
-    fetchFavoriteStatus();
-  }, [slug, token]);
-
-  const favoritePost = useCallback(
-    async (slug: string) => {
-      if (!token) {
-        setError("Authorization token is missing");
-        return;
-      }
-
+  const toggleFavorite = useCallback(
+    async (favorite: boolean) => {
       setIsLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(`http://localhost:3000/api/articles/${slug}/favorite`, {
-          method: "POST",
-          headers: {
-            Authorization: `Token ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+      const method = favorite ? "POST" : "DELETE";
+      const url = `${process.env.REACT_APP_API_URL}/api/articles/${slug}/favorite`;
 
-        if (!response.ok) throw new Error("Failed to favorite post");
-        const data: ArticleResponse = await response.json();
-
+      const data = await apiFetch<{ article: { favorited: boolean; favoritesCount: number } }>(url, { method, headers });
+      if (data) {
         setIsFavorited(data.article.favorited);
         setFavoritesCount(data.article.favoritesCount);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unknown error occurred");
-        }
-      } finally {
-        setIsLoading(false);
+        showSuccessNotification(favorite ? "Favorited successfully!" : "Unfavorited successfully!");
       }
+      setIsLoading(false);
     },
-    [token]
+    [slug, headers]
   );
 
-  const unfavoritePost = useCallback(
-    async (slug: string) => {
-      if (!token) {
-        setError("Authorization token is missing");
-        return;
-      }
-
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(`http://localhost:3000/api/articles/${slug}/favorite`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Token ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) throw new Error("Failed to unfavorite post");
-        const data: ArticleResponse = await response.json();
-        setIsFavorited(data.article.favorited);
-        setFavoritesCount(data.article.favoritesCount);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unknown error occurred");
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [token]
-  );
-
-  return { favoritePost, unfavoritePost, isFavorited, favoritesCount, isLoading, error };
+  return { toggleFavorite, isFavorited, favoritesCount, isLoading };
 };

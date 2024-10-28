@@ -45,3 +45,16 @@ export const SuccessMessage: FC<SuccessMessageProps> = ({ username, show }) => {
     </div>
   );
 };
+
+export const showSuccessNotification = (message: string) => {
+  toast.success(
+    <div className="success-notification">
+      {message}
+    </div>,
+    {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: true,
+    }
+  );
+};

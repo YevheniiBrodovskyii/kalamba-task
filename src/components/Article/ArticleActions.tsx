@@ -1,10 +1,8 @@
-import { FC, useEffect } from "react";
+import { FC, Fragment } from "react";
 import { Author } from "types";
 import { Link } from "react-router-dom";
-import { useFavoritePost } from "hooks/useFavoritePost";
-import { useFollowUser } from "hooks/useFollowUser";
-import { Button, showErrorNotification } from "components";
-import { useRedirectToLogin } from "hooks/useRedirectToLogin";
+import { useFavoritePost, useActionHandler, useFollowUser } from "hooks";
+import { Button } from "components";
 import { DEFAULT_AVATAR_URL } from "constants";
 
 interface ArticleActionsProps {
@@ -14,39 +12,33 @@ interface ArticleActionsProps {
   slug: string;
 }
 
+//TODO: Automatically update articles after like/follow
 export const ArticleActions: FC<ArticleActionsProps> = ({ author, createdAt, slug }) => {
   const {
-    favoritePost,
-    unfavoritePost,
+    toggleFavorite,
     isFavorited,
     favoritesCount,
     isLoading: isFavoriting,
-    error: favoriteError,
   } = useFavoritePost(slug);
   const {
-    followUser,
-    unfollowUser,
+    toggleFollow,
     isFollowing,
     isLoading: isFollowingUser,
-    error: followError,
   } = useFollowUser(author.username);
-  const redirectToLogin = useRedirectToLogin();
+  const { handleActionClick } = useActionHandler();
 
-  const handleActionClick = (action: (arg: string) => Promise<void>, arg: string) => {
-    redirectToLogin();
-    action(arg);
-  };
+  const handleFavoriteClick = () => handleActionClick(
+    () => toggleFavorite(!isFavorited),
+    slug,
+  );
 
-  const handleFavoriteClick = () => handleActionClick(isFavorited ? unfavoritePost : favoritePost, slug);
-  const handleFollowClick = () => handleActionClick(isFollowing ? unfollowUser : followUser, author.username);
-
-  useEffect(() => {
-    if (followError) showErrorNotification(followError);
-    if (favoriteError) showErrorNotification(favoriteError);
-  }, [followError, favoriteError]);
+  const handleFollowClick = () => handleActionClick(
+    () => toggleFollow(!isFollowing),
+    author.username,
+  );
 
   return (
-    <div className="article-meta">
+    <div className="article-meta article-wrapper">
       <Link to={`/profile/${author.username}`}>
         <img src={author.image || DEFAULT_AVATAR_URL} alt={`${author.username || "User"}'s avatar`} />
       </Link>
@@ -56,23 +48,24 @@ export const ArticleActions: FC<ArticleActionsProps> = ({ author, createdAt, slu
         </Link>
         <span className="date">{new Date(createdAt).toLocaleDateString()}</span>
       </div>
-      <Button
-        variant="outline-secondary"
-        onClick={handleFollowClick}
-        disabled={isFollowingUser}
-        icon={<i className="ion-plus-round" />}
-      >
-        &nbsp; {isFollowing ? "Unfollow" : "Follow"} {author.username}
-      </Button>
-      &nbsp;
-      <Button
-        variant="outline-primary"
-        onClick={handleFavoriteClick}
-        disabled={isFavoriting}
-        icon={<i className="ion-heart" />}
-      >
-        &nbsp; {isFavorited ? "Unfavorite" : "Favorite"} Post <span className="counter">({favoritesCount})</span>
-      </Button>
+      <Fragment>
+        <Button
+          variant="outline-secondary"
+          onClick={handleFollowClick}
+          disabled={isFollowingUser}
+          icon={<i className="ion-plus-round" />}
+        >
+          {isFollowing ? " Unfollow" : " Follow"} {author.username}
+        </Button>
+        <Button
+          variant="outline-primary"
+          onClick={handleFavoriteClick}
+          disabled={isFavoriting}
+          icon={<i className="ion-heart" />}
+        >
+          {isFavorited ? " Unfavorite" : " Favorite"} Post <span className="counter">({favoritesCount})</span>
+        </Button>
+      </Fragment>
     </div>
   );
 };
