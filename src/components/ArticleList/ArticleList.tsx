@@ -1,17 +1,11 @@
-import { FC, useEffect, useState } from "react";
-import { useArticles } from "../../hooks/useArticles";
+import { FC, useState } from "react";
+import { useArticles } from "hooks";
 import { ArticlePreview } from "./ArticlePreview";
-import { Banner, showErrorNotification, FeedToggle, Loading, NoDataFoundMessage, Sidebar } from "components";
+import { Banner, FeedToggle, Loading, NoDataFoundMessage, Sidebar } from "components";
 
 export const ArticleList: FC = () => {
   const [isGlobalFeed, setIsGlobalFeed] = useState(true);
-  const { articles, loading, error } = useArticles({ feed: !isGlobalFeed });
-
-  useEffect(() => {
-    if (error) {
-      showErrorNotification(error);
-    }
-  }, [error]);
+  const { articles, loading } = useArticles({ feed: !isGlobalFeed });
 
   return (
     <div className="home-page">

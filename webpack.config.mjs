@@ -1,6 +1,10 @@
+import webpack from 'webpack';
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+dotenv.config(); 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,7 +29,6 @@ export default {
           loader: 'babel-loader',
         },
       },
-      // Новое правило для CSS
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
@@ -34,13 +37,18 @@ export default {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html', // HTML-файл
+      template: './public/index.html',
       filename: 'index.html',
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        REACT_APP_API_URL: JSON.stringify(process.env.REACT_APP_API_URL),
+      },
     }),
   ],
   devServer: {
     static: path.join(__dirname, 'public'),
-    port: process.env.PORT || 8080,
+    port: process.env.PORT || 8080 ,
     historyApiFallback: true,
     hot: true,
   },

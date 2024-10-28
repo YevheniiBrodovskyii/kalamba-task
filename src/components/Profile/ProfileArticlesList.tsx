@@ -1,37 +1,16 @@
 import { ArticlePreview } from "components/ArticleList/ArticlePreview";
-import { FC, useEffect } from "react";
-import { useArticles } from "hooks/useArticles";
-import { showErrorNotification, Loading, NoDataFoundMessage } from "components/ui";
+import { FC, Fragment } from "react";
+import { Loading, NoDataFoundMessage } from "components/ui";
+import { Article } from "types";
 
 interface ArticleListProps {
-  username: string;
-  showFavorited: boolean;
+  articles: Article[];
+  loading: boolean;
 }
 
-export const ProfileArticlesList: FC<ArticleListProps> = ({ username, showFavorited }) => {
-  const {
-    articles: myArticles,
-    loading: loadingMyArticles,
-    error: errorMyArticles,
-  } = useArticles({ author: username });
-
-  const {
-    articles: favoritedArticles,
-    loading: loadingFavoritedArticles,
-    error: errorFavoritedArticles,
-  } = useArticles({ favorited: username });
-
-  const articles = showFavorited ? favoritedArticles : myArticles;
-  const loading = showFavorited ? loadingFavoritedArticles : loadingMyArticles;
-  const error = showFavorited ? errorFavoritedArticles : errorMyArticles;
+export const ProfileArticlesList: FC<ArticleListProps> = ({ articles, loading }) => {
 
   const renderLoading = () => <Loading />;
-
-  useEffect(() => {
-    if (error) {
-      showErrorNotification(error);
-    }
-  }, [error]);
 
   const renderArticles = () => {
     if (articles.length === 0) {
@@ -42,8 +21,8 @@ export const ProfileArticlesList: FC<ArticleListProps> = ({ username, showFavori
   };
 
   return (
-    <>
+    <Fragment>
       {loading ? renderLoading() : renderArticles()}
-    </>
+    </Fragment>
   );
 };

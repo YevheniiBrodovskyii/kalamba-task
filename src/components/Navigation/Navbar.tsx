@@ -1,6 +1,6 @@
 import { DisabledButton } from "components/ui";
 import { useAuth } from "contexts/AuthContext";
-import { FC, useState } from "react";
+import { FC, Fragment, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 export const Navbar: FC = () => {
@@ -59,14 +59,14 @@ export const Navbar: FC = () => {
               {error && <div className="error-messages">{error}</div>}
             </li>
           ) : (
-            <>
+            <Fragment>
               <li className="nav-item">
                 {renderNavLink("/login", "Sign in")}
               </li>
               <li className="nav-item">
                 {renderNavLink("/register", "Sign up")}
               </li>
-            </>
+            </Fragment>
           )}
         </ul>
       </div>

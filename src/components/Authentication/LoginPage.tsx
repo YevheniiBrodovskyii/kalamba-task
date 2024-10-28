@@ -1,11 +1,10 @@
-import { showErrorNotification } from "components/ui";
 import { SuccessMessage } from "components/ui/StatusMessages";
 import { useAuth } from "contexts/AuthContext";
 import { FC, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export const LoginPage: FC = () => {
-  const { user, login, loading, error } = useAuth();
+  const { user, login, loading } = useAuth();
   const [formData, setFormData] = useState<{ email: string; password: string }>({ email: "", password: "" });
   const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -30,12 +29,6 @@ export const LoginPage: FC = () => {
       return () => clearTimeout(timer);
     }
   }, [user, navigate]);
-
-  useEffect(() => {
-    if (error) {
-      showErrorNotification(error);
-    }
-  }, [error]);
 
   return (
     <div className="auth-page">

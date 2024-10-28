@@ -1,10 +1,10 @@
 import React, { createContext, useCallback, useContext, useEffect, useReducer } from "react";
 import { Author } from "../types";
+import { showErrorNotification } from "components";
 
 interface AuthState {
   user: Author | null;
   loading: boolean;
-  error: string | null;
 }
 
 interface AuthContextType extends AuthState {
@@ -16,25 +16,21 @@ interface AuthContextType extends AuthState {
 const initialState: AuthState = {
   user: null,
   loading: false,
-  error: null,
 };
 
 type AuthAction =
   | { type: "LOGIN_SUCCESS"; user: Author }
   | { type: "LOGOUT" }
-  | { type: "SET_LOADING"; loading: boolean }
-  | { type: "SET_ERROR"; error: string | null };
+  | { type: "SET_LOADING"; loading: boolean };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case "LOGIN_SUCCESS":
-      return { ...state, user: action.user, loading: false, error: null };
+      return { ...state, user: action.user, loading: false };
     case "LOGOUT":
       return { ...initialState };
     case "SET_LOADING":
       return { ...state, loading: action.loading };
-    case "SET_ERROR":
-      return { ...state, error: action.error };
     default:
       return state;
   }
@@ -46,13 +42,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   const setLoading = (loading: boolean) => dispatch({ type: "SET_LOADING", loading });
-  const setError = (error: string | null) => dispatch({ type: "SET_ERROR", error });
 
   const handleError = useCallback((error: unknown) => {
     if (error instanceof Error) {
-      setError(error.message);
+      showErrorNotification(error.message);
     } else {
-      setError('An unknown error occurred');
+      showErrorNotification('An unknown error occurred');
     }
   }, []);
 
@@ -62,16 +57,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout();
       }
       const errorData = await response.json();
-      console.log(errorData);
       throw new Error(errorData?.message + ": Incorrect email or password");
     }
   }, []);
 
   const login = async (email: string, password: string) => {
     setLoading(true);
-    setError(null);
     try {
-      const response = await fetch(`http://localhost:3000/api/users/login`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: { email, password } }),
@@ -104,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/user`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/user`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
