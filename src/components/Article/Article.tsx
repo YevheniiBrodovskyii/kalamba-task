@@ -1,20 +1,25 @@
 import { useParams } from "react-router-dom";
 import { useArticle } from "../../hooks/useArticle";
-import { FC } from "react";
-import { CommentsSection, ErrorMessage, Loading, NoDataFoundMessage } from "components";
+import { FC, useEffect } from "react";
+import { CommentsSection, showErrorNotification, Loading, NoDataFoundMessage } from "components";
 import { ArticleActions } from "./ArticleActions";
 import { Article as ArticleType } from "../../types";
+import ReactMarkdown from "react-markdown";
 
 export const Article: FC = () => {
   const { slug = '' } = useParams<{ slug: string }>();
   const { article, loading, error } = useArticle(slug);
 
-  //TODO: Make beautiful loader/ displaying error
+  useEffect(() => {
+    if (error) {
+      showErrorNotification(error);
+    }
+  }, [error]);
+
   if (loading) return <Loading />;
-  if (error) return <ErrorMessage error={error} />;
   if (!article) return <NoDataFoundMessage />;
 
-  const { title, body, createdAt, author, favoritesCount } = article as ArticleType;
+  const { title, body, createdAt, author, favoritesCount } = article as ArticleType || {};
 
   const articleActions = (
     <ArticleActions createdAt={createdAt} author={author} favoritesCount={favoritesCount} slug={slug} />
@@ -31,7 +36,9 @@ export const Article: FC = () => {
 
       <div className="container page">
         <div className="row article-content">
-          <div className="col-md-12">{body}</div>
+          <div className="col-md-12">
+            <ReactMarkdown>{body}</ReactMarkdown>
+          </div>
         </div>
 
         <hr />

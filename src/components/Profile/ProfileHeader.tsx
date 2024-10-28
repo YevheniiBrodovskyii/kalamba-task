@@ -1,8 +1,8 @@
-import { Button } from "components/ui";
+import { Button, showErrorNotification } from "components/ui";
 import { DEFAULT_AVATAR_URL } from "constants";
 import { useFollowUser } from "hooks/useFollowUser";
 import { useRedirectToLogin } from "hooks/useRedirectToLogin";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Author } from "types";
 
 interface ProfileHeaderProps {
@@ -20,10 +20,33 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({ profile }) => {
   } = useFollowUser(username);
   const redirectToLogin = useRedirectToLogin();
 
+  useEffect(() => {
+    if (followError) {
+      showErrorNotification(followError);
+    }
+  }, [followError]);
+
   const handleFollowClick = () => {
-    redirectToLogin()
-    return isFollowing ? unfollowUser(username) : followUser(username);
+    if (!isFollowingUser) {
+      redirectToLogin();
+      return isFollowing ? unfollowUser(username) : followUser(username);
+    }
   };
+
+  const renderFollowButton = () => (
+    <Button
+      onClick={handleFollowClick}
+      disabled={isFollowingUser}
+      variant="outline-secondary"
+      position="action-btn"
+      icon={<i className="ion-plus-round" />}
+    >
+      &nbsp; {isFollowing ? `Unfollow ${username}` : `Follow ${username}`}
+    </Button>
+  );
+
+
+
 
   return (
     <div className="user-info">
@@ -33,18 +56,9 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({ profile }) => {
             <img src={image || DEFAULT_AVATAR_URL} alt={`${username}'s avatar`} className="user-img" />
             <h4>{username}</h4>
             <p>{bio}</p>
-            <Button
-              onClick={handleFollowClick}
-              disabled={isFollowingUser}
-              variant="outline-secondary"
-              position="action-btn"
-              icon={<i className="ion-plus-round" />}
-            >
-              &nbsp; {isFollowing ? `Unfollow ${username}` : `Follow ${username}`}
-            </Button>
+            {renderFollowButton()}
           </div>
         </div>
-        {followError && <p className="error">{followError}</p>}
       </div>
     </div>
   );

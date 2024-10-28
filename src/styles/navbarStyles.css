@@ -1,0 +1,27 @@
+.navbar {
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.nav-link {
+    color: black;
+    text-decoration: none;
+}
+
+.nav-item {
+    margin: 0 10px;
+}
+
+.error-messages {
+    color: red;
+}
+
+.logout-button {
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: red;
+}

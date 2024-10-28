@@ -1,6 +1,7 @@
 import { ArticlePreview } from "components/ArticleList/ArticlePreview";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useArticles } from "hooks/useArticles";
+import { showErrorNotification, Loading, NoDataFoundMessage } from "components/ui";
 
 interface ArticleListProps {
   username: string;
@@ -24,17 +25,25 @@ export const ProfileArticlesList: FC<ArticleListProps> = ({ username, showFavori
   const loading = showFavorited ? loadingFavoritedArticles : loadingMyArticles;
   const error = showFavorited ? errorFavoritedArticles : errorMyArticles;
 
+  const renderLoading = () => <Loading />;
+
+  useEffect(() => {
+    if (error) {
+      showErrorNotification(error);
+    }
+  }, [error]);
+
+  const renderArticles = () => {
+    if (articles.length === 0) {
+      return <NoDataFoundMessage />;
+    }
+
+    return articles.map(article => <ArticlePreview article={article} key={article.slug} />);
+  };
+
   return (
     <>
-      {loading ? (
-        <p>Loading articles...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : articles.length ? (
-        articles.map(article => <ArticlePreview article={article} key={article.slug} />)
-      ) : (
-        <p>No articles found.</p>
-      )}
+      {loading ? renderLoading() : renderArticles()}
     </>
   );
 };

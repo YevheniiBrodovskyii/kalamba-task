@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { Article } from "types";
 import { Link } from "react-router-dom";
 import { useFavoritePost } from "hooks/useFavoritePost";
@@ -18,6 +18,7 @@ export const ArticlePreview: FC<{ article: Article }> = ({ article }) => {
     error: favoriteError,
   } = useFavoritePost(slug);
   const redirectToLogin = useRedirectToLogin();
+  const formattedDate = useMemo(() => new Date(createdAt).toLocaleDateString(), [createdAt]);
 
   const handleFavoriteClick = () => {
     redirectToLogin();
@@ -38,7 +39,7 @@ export const ArticlePreview: FC<{ article: Article }> = ({ article }) => {
               {authorUsername}
             </Link>
           )}
-          <span className="date">{new Date(createdAt).toLocaleDateString()}</span>
+          <span className="date">{formattedDate}</span>
         </div>
         <Button
           onClick={handleFavoriteClick}

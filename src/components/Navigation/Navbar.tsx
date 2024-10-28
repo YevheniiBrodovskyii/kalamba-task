@@ -7,23 +7,30 @@ export const Navbar: FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogout = async () => {
     setLoading(true);
-    setError(false);
+    setError(null);
     try {
       logout();
       navigate("/");
-    } catch (error) {
-      setError(Boolean(error));
+    } catch (err) {
+      setError(`Failed to log out. ${err}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const activeStyle = ({ isActive }: { isActive: boolean }) =>
-    isActive ? { textDecoration: 'none', color: 'black' } : undefined;
+  const renderNavLink = (to: string, text: string, icon?: JSX.Element) => (
+    <NavLink
+      className="nav-link"
+      to={to}
+      style={({ isActive }) => (isActive ? { color: 'black' } : undefined)}
+    >
+      {icon} {text}
+    </NavLink>
+  );
 
   return (
     <nav className="navbar navbar-light">
@@ -31,43 +38,33 @@ export const Navbar: FC = () => {
         <a className="navbar-brand" href="/#">conduit</a>
         <ul className="nav navbar-nav pull-xs-right">
           <li className="nav-item">
-            <NavLink className="nav-link" to="/" style={activeStyle}>
-              Home
-            </NavLink>
+            {renderNavLink("/", "Home")}
           </li>
           <li className="nav-item">
-            {user ? (<NavLink className="nav-link" to="/editor" style={activeStyle}>
-              <i className="ion-compose" />&nbsp;New Article
-            </NavLink>) : (<DisabledButton text="New Article" />)}
+            {user ? renderNavLink("/editor", "New Article", <i className="ion-compose" />) : <DisabledButton text="New Article" />}
           </li>
           <li className="nav-item">
-            {user ? (<NavLink className="nav-link" to="/settings" style={activeStyle}>
-              <i className="ion-gear-a" />&nbsp;Settings
-            </NavLink>) : (<DisabledButton text="Settings" />)}
+            {user ? renderNavLink("/settings", "Settings", <i className="ion-gear-a" />) : <DisabledButton text="Settings" />}
           </li>
           {user ? (
             <li className="nav-item">
               <button
-                className="nav-link"
+                className={`nav-link logout-button`}
                 onClick={handleLogout}
                 disabled={loading}
-                style={{ cursor: "pointer", background: "none", border: "none", color: "red" }}
+                aria-label="Logout"
               >
-                {loading ? "Logging out..." : "Logout"}
+                {loading ? <span className="spinner-border spinner-border-sm" aria-hidden="true"></span> : "Logout"}
               </button>
-              {error && <div className="error-messages">Try again</div>}
+              {error && <div className="error-messages">{error}</div>}
             </li>
           ) : (
             <>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/login" style={activeStyle}>
-                  Sign in
-                </NavLink>
+                {renderNavLink("/login", "Sign in")}
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/register" style={activeStyle}>
-                  Sign up
-                </NavLink>
+                {renderNavLink("/register", "Sign up")}
               </li>
             </>
           )}

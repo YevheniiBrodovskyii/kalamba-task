@@ -10,24 +10,39 @@ interface FeedToggleProps {
 
 export const FeedToggle: FC<FeedToggleProps> = ({ isGlobal, onToggle }) => {
   const { user } = useAuth();
+
+  const getNavLinkClass = (isActive: boolean) => (isActive ? "active" : "");
+
+  const handleFeedToggle = (isGlobalFeed: boolean) => {
+    if (isGlobal !== isGlobalFeed) {
+      onToggle(isGlobalFeed);
+    }
+  };
+
   return (
     <div className="feed-toggle">
       <ul className="nav nav-pills outline-active">
         <li className="nav-item">
           {user ? (
             <NavLink
-              className={`nav-link ${!isGlobal ? "active" : ""}`}
+              className={`nav-link ${getNavLinkClass(!isGlobal)}`}
               to="/your-feed"
-              onClick={() => onToggle(false)}
+              onClick={() => handleFeedToggle(false)}
+              aria-current={!isGlobal ? "page" : undefined}
             >
               Your Feed
             </NavLink>
           ) : (
-            <DisabledButton text="Your Feed"/>
+            <DisabledButton text="Your Feed" />
           )}
         </li>
         <li className="nav-item">
-          <NavLink className={`nav-link ${isGlobal ? "active" : ""}`} to="/global-feed" onClick={() => onToggle(true)}>
+          <NavLink
+            className={`nav-link ${getNavLinkClass(isGlobal)}`}
+            to="/global-feed"
+            onClick={() => handleFeedToggle(true)}
+            aria-current={isGlobal ? "page" : undefined}
+          >
             Global Feed
           </NavLink>
         </li>

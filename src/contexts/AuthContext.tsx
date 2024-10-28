@@ -48,6 +48,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const setLoading = (loading: boolean) => dispatch({ type: "SET_LOADING", loading });
   const setError = (error: string | null) => dispatch({ type: "SET_ERROR", error });
 
+  const handleError = useCallback((error: unknown) => {
+    if (error instanceof Error) {
+      setError(error.message);
+    } else {
+      setError('An unknown error occurred');
+    }
+  }, []);
+
+  const handleResponseError = useCallback(async (response: Response) => {
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+      }
+      const errorData = await response.json();
+      console.log(errorData);
+      throw new Error(errorData?.message + ": Incorrect email or password");
+    }
+  }, []);
+
   const login = async (email: string, password: string) => {
     setLoading(true);
     setError(null);
@@ -58,18 +77,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         body: JSON.stringify({ user: { email, password } }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        const userData = data.user;
-        dispatch({ type: "LOGIN_SUCCESS", user: userData });
-        localStorage.setItem("jwtToken", userData.token);
-      } else if (response.status === 401) {
-        setError("Incorrect email or password");
-      } else {
-        setError("An unexpected error has occurred");
-      }
-    } catch {
-      setError("A network error has occurred");
+      await handleResponseError(response);
+
+      const data = await response.json();
+      const userData = data.user;
+      dispatch({ type: "LOGIN_SUCCESS", user: userData });
+      localStorage.setItem("jwtToken", userData.token);
+    } catch (error: unknown) {
+      handleError(error);
     } finally {
       setLoading(false);
     }
@@ -97,24 +112,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        dispatch({ type: "LOGIN_SUCCESS", user: data.user });
-      } else {
-        setError("Failed to get user information");
-      }
-    } catch {
-      setError("A network error has occurred");
+      await handleResponseError(response);
+
+      const data = await response.json();
+      dispatch({ type: "LOGIN_SUCCESS", user: data.user });
+    } catch (error: unknown) {
+      handleError(error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [handleError, handleResponseError]);
 
   useEffect(() => {
     getCurrentUser();
   }, [getCurrentUser]);
 
-  return <AuthContext.Provider value={{ ...state, login, logout, getCurrentUser }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ ...state, login, logout, getCurrentUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = (): AuthContextType => {
