@@ -1,31 +1,45 @@
-import React from "react";
-import { HashRouter as Router, Routes , Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Editor from "./components/Editor";
 import Settings from "./components/Settings";
-import { Footer, Navbar, ArticleList, Article, Profile, LoginPage, RegisterPage } from "./components";
+import { ToastContainer } from "react-toastify";
+import { Footer, Navbar, ArticleList, Article, Profile, LoginPage, RegisterPage, NotFoundPage } from "./components";
+
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
-    <>
-      <Router>
-        <Navbar />
-        <Routes >
-          <Route path="/editor"  element={<Editor/>} />
-          <Route path="/editor/:slug"  element={<Editor/>} />
-          <Route path="/login"  element={<LoginPage/>} />
-          <Route path="/profile/:username"  element={<Profile/>} />
-          <Route path="/profile/:username/my"  element={<Profile/>} /> 
-          <Route path="/profile/:username/favorites"  element={<Profile/>} />
-          <Route path="/register"  element={<RegisterPage/>} />
-          <Route path="/settings"  element={<Settings/>} />
-          <Route path="/articles/:slug"  element={<Article/>} />
-          <Route path="/" element={<ArticleList/>} />
-          <Route path="/global-feed" element={<ArticleList/>} />
-          <Route path="/your-feed" element={<ArticleList/>} />
+    <Router>
+      <Navbar />
+      <main>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+        <Routes>
+          <Route path="/" element={<ArticleList />} />
+          <Route path="/global-feed" element={<ArticleList />} />
+          <Route path="/your-feed" element={<ArticleList />} />
+          <Route path="/editor" element={<Editor />} />
+          <Route path="/editor/:slug" element={<Editor />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/articles/:slug" element={<Article />} />
+          <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/profile/:username/my" element={<Profile />} />
+          <Route path="/profile/:username/favorites" element={<Profile />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
-      </Router>
+      </main>
       <Footer />
-    </>
+    </Router>
   );
 }
 

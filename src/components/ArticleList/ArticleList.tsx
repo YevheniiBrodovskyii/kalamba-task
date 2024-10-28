@@ -1,15 +1,17 @@
-import React, { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useArticles } from "../../hooks/useArticles";
 import { ArticlePreview } from "./ArticlePreview";
-import { Banner, ErrorMessage, FeedToggle, Loading, Sidebar } from "components";
+import { Banner, showErrorNotification, FeedToggle, Loading, NoDataFoundMessage, Sidebar } from "components";
 
 export const ArticleList: FC = () => {
   const [isGlobalFeed, setIsGlobalFeed] = useState(true);
   const { articles, loading, error } = useArticles({ feed: !isGlobalFeed });
 
-  //TODO: Make beautiful loader/ displaying error
-  if (loading) return <Loading />;
-  if (error) return <ErrorMessage error={error} />;
+  useEffect(() => {
+    if (error) {
+      showErrorNotification(error);
+    }
+  }, [error]);
 
   return (
     <div className="home-page">
@@ -19,9 +21,15 @@ export const ArticleList: FC = () => {
           <div className="col-md-9">
             <FeedToggle isGlobal={isGlobalFeed} onToggle={setIsGlobalFeed} />
 
-            {articles.map(article => (
-              <ArticlePreview key={article.slug} article={article} />
-            ))}
+            {loading ? (
+              <Loading />
+            ) : !articles || articles.length === 0 ? (
+              <NoDataFoundMessage />
+            ) : (
+              articles.map(article => (
+                <ArticlePreview key={article.slug} article={article} />
+              ))
+            )}
           </div>
 
           <div className="col-md-3">

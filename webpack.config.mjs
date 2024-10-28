@@ -25,6 +25,11 @@ export default {
           loader: 'babel-loader',
         },
       },
+      // Новое правило для CSS
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
     ],
   },
   plugins: [

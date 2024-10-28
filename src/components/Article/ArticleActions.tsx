@@ -1,10 +1,11 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Author } from "types";
 import { Link } from "react-router-dom";
 import { useFavoritePost } from "hooks/useFavoritePost";
 import { useFollowUser } from "hooks/useFollowUser";
-import { Button } from "components";
+import { Button, showErrorNotification } from "components";
 import { useRedirectToLogin } from "hooks/useRedirectToLogin";
+import { DEFAULT_AVATAR_URL } from "constants";
 
 interface ArticleActionsProps {
   author: Author;
@@ -31,20 +32,23 @@ export const ArticleActions: FC<ArticleActionsProps> = ({ author, createdAt, slu
   } = useFollowUser(author.username);
   const redirectToLogin = useRedirectToLogin();
 
-  const handleFavoriteClick = () => {
-    redirectToLogin()
-    return isFavorited ? unfavoritePost(slug) : favoritePost(slug);
+  const handleActionClick = (action: (arg: string) => Promise<void>, arg: string) => {
+    redirectToLogin();
+    action(arg);
   };
 
-  const handleFollowClick = () => {
-    redirectToLogin()
-    return isFollowing ? unfollowUser(author.username) : followUser(author.username);
-  };
+  const handleFavoriteClick = () => handleActionClick(isFavorited ? unfavoritePost : favoritePost, slug);
+  const handleFollowClick = () => handleActionClick(isFollowing ? unfollowUser : followUser, author.username);
+
+  useEffect(() => {
+    if (followError) showErrorNotification(followError);
+    if (favoriteError) showErrorNotification(favoriteError);
+  }, [followError, favoriteError]);
 
   return (
     <div className="article-meta">
       <Link to={`/profile/${author.username}`}>
-        <img src={author.image} alt={`${author.username}'s avatar`} />
+        <img src={author.image || DEFAULT_AVATAR_URL} alt={`${author.username || "User"}'s avatar`} />
       </Link>
       <div className="info">
         <Link to={`/profile/${author.username}`} className="author">
@@ -69,8 +73,6 @@ export const ArticleActions: FC<ArticleActionsProps> = ({ author, createdAt, slu
       >
         &nbsp; {isFavorited ? "Unfavorite" : "Favorite"} Post <span className="counter">({favoritesCount})</span>
       </Button>
-      {favoriteError && <p className="error">{favoriteError}</p>}
-      {followError && <p className="error">{followError}</p>}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { ErrorMessage } from "components/ui";
+import { showErrorNotification } from "components/ui";
 import { SuccessMessage } from "components/ui/StatusMessages";
 import { useAuth } from "contexts/AuthContext";
 import { FC, useEffect, useState } from "react";
@@ -31,6 +31,12 @@ export const LoginPage: FC = () => {
     }
   }, [user, navigate]);
 
+  useEffect(() => {
+    if (error) {
+      showErrorNotification(error);
+    }
+  }, [error]);
+
   return (
     <div className="auth-page">
       <div className="container page">
@@ -41,7 +47,6 @@ export const LoginPage: FC = () => {
               <Link to="/register">Do not have an account? Sign up</Link>
             </p>
 
-            <ErrorMessage error={error} />
             <SuccessMessage username={user?.username || ""} show={showSuccessMessage} />
 
             {!user && (

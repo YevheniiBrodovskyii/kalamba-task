@@ -1,4 +1,5 @@
 import React, { FC } from "react";
+import classNames from "classnames";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "outline-primary" | "outline-secondary" | "outline";
@@ -18,10 +19,30 @@ export const Button: FC<ButtonProps> = ({
   children,
   ...props
 }) => {
-  const buttonClass = `btn btn-${variant} btn-${size} ${position}`;
+  const buttonClass = classNames(
+    'btn',
+    `btn-${variant}`,
+    `btn-${size}`,
+    position
+  );
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (disabled) {
+      event.preventDefault();
+    }
+    if (onClick) {
+      onClick(event);
+    }
+  };
 
   return (
-    <button className={buttonClass} onClick={onClick} disabled={disabled} {...props}>
+    <button
+      className={buttonClass}
+      onClick={handleClick}
+      disabled={disabled}
+      {...props}
+      aria-disabled={disabled} // добавляем атрибут доступности
+    >
       {icon && <span className="icon">{icon}</span>}
       {children}
     </button>

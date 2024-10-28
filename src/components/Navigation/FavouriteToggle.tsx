@@ -8,6 +8,12 @@ interface ArticleToggleProps {
 }
 
 export const FavouriteToggle: FC<ArticleToggleProps> = ({ showFavorited, onToggle, username }) => {
+  const handleToggle = (isFavorited: boolean) => {
+    if (showFavorited !== isFavorited) {
+      onToggle(isFavorited);
+    }
+  };
+
   return (
     <div className="articles-toggle">
       <ul className="nav nav-pills outline-active">
@@ -15,7 +21,8 @@ export const FavouriteToggle: FC<ArticleToggleProps> = ({ showFavorited, onToggl
           <NavLink
             className={`nav-link ${!showFavorited ? "active" : ""}`}
             to={`/profile/${username}/my`}
-            onClick={() => onToggle(false)}
+            onClick={() => handleToggle(false)}
+            aria-current={!showFavorited ? "page" : undefined}
           >
             My Articles
           </NavLink>
@@ -24,7 +31,8 @@ export const FavouriteToggle: FC<ArticleToggleProps> = ({ showFavorited, onToggl
           <NavLink
             className={`nav-link ${showFavorited ? "active" : ""}`}
             to={`/profile/${username}/favorites`}
-            onClick={() => onToggle(true)}
+            onClick={() => handleToggle(true)}
+            aria-current={showFavorited ? "page" : undefined} 
           >
             Favorited Articles
           </NavLink>
