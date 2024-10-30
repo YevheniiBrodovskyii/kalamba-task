@@ -4,7 +4,7 @@ import { FaLock } from "react-icons/fa";
 
 export const DisabledButton: FC<{ text: string }> = ({ text }) => {
     return (
-        <Tooltip title="You must log in to see your feed">
+        <Tooltip title="You must log in to see this section">
             <div
                 role="button"
                 tabIndex={0}

@@ -3,7 +3,7 @@ import { FC } from "react"
 export const Footer: FC = () => {
     return (
         <footer>
-        <div className="container">
+        <div className="container" data-testid='footer'>
           <a href="/#" className="logo-font">
             conduit
           </a>

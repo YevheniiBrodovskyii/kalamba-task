@@ -1,14 +1,15 @@
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Editor from "./components/Editor";
 import Settings from "./components/Settings";
 import { ToastContainer } from "react-toastify";
 import { Footer, Navbar, ArticleList, Article, Profile, LoginPage, RegisterPage, NotFoundPage } from "./components";
 
 import "react-toastify/dist/ReactToastify.css";
+import { Fragment } from "react/jsx-runtime";
 
 function App() {
   return (
-    <Router>
+    <Fragment>
       <Navbar />
       <main>
         <ToastContainer
@@ -39,7 +40,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
-    </Router>
+    </Fragment>
   );
 }
 
