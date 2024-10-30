@@ -4,7 +4,7 @@ import { FC } from "react";
 import { CommentsSection, Loading } from "components";
 import { ArticleActions } from "./ArticleActions";
 import { Article as ArticleType } from "../../types";
-import ReactMarkdown from "react-markdown";
+import Markdown from "markdown-to-jsx";
 
 export const Article: FC = () => {
   const { slug = '' } = useParams<{ slug: string }>();
@@ -31,7 +31,7 @@ export const Article: FC = () => {
       <div className="container page">
         <div className="row article-content">
           <div className="col-md-12">
-            <ReactMarkdown>{body}</ReactMarkdown>
+            <Markdown>{body}</Markdown>
           </div>
         </div>
 

@@ -41,7 +41,7 @@ export const Button: FC<ButtonProps> = ({
       onClick={handleClick}
       disabled={disabled}
       {...props}
-      aria-disabled={disabled} // добавляем атрибут доступности
+      aria-disabled={disabled}
     >
       {icon && <span className="icon">{icon}</span>}
       {children}

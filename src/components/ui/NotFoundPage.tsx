@@ -4,7 +4,7 @@ import { FaHome } from 'react-icons/fa';
 
 export const NotFoundPage: FC = () => {
     return (
-        <div className="container">
+        <div className="container" data-testid='not-found-page'>
             <div className="col-xs-12 col-md-8 offset-md-2" style={{ marginTop: '100px' }}>
                 <h1 className="text-xs-center">404</h1>
                 <p className="lead text-xs-center">Oops! Page not found.</p>

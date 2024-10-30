@@ -6,7 +6,6 @@ import { Banner, FeedToggle, Loading, NoDataFoundMessage, Sidebar } from "compon
 export const ArticleList: FC = () => {
   const [isGlobalFeed, setIsGlobalFeed] = useState(true);
   const { articles, loading } = useArticles({ feed: !isGlobalFeed });
-
   return (
     <div className="home-page">
       <Banner />
